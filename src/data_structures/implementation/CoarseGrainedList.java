@@ -1,6 +1,8 @@
 package data_structures.implementation;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -58,8 +60,9 @@ public class CoarseGrainedList<T extends Comparable<T>> implements Sorted<T> {
     public ArrayList<T> toArrayList() {
         Node current = head;
         ArrayList<T> list = new ArrayList<>();
-        while(!current.equals(null)){
-            list.add(current.getData());
+        while(current != null){
+            list.add((T) current.getData());
+            current = current.getNext();
         }
 
         return list;

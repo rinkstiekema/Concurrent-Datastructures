@@ -32,7 +32,5 @@ public class Node<T> {
         return data.hashCode();
     }
 
-    public T getData(){
-        return data;
-    }
+    public T getData(){ return data; }
 }
