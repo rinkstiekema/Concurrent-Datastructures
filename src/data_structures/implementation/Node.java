@@ -2,29 +2,29 @@ package data_structures.implementation;
 
 public class Node<T> {
 
-    private Node next;
+    private Node<T> next;
     private T data;
 
     public Node(){
-        next = null;
-        data = null;
+    	data = null;
+    	next = null;
     }
-
+    
     public Node(T data){
         this.data = data;
         next = null;
     }
 
-    public Node(T data, Node next){
+    public Node(T data, Node<T> next){
         this.data = data;
         this.next = next;
     }
 
-    public Node getNext(){
+    public Node<T> getNext(){
         return next;
     }
 
-    public void setNext(Node node){
+    public void setNext(Node<T> node){
         this.next = node;
     }
 
