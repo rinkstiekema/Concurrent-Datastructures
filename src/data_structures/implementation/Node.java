@@ -1,6 +1,6 @@
 package data_structures.implementation;
 
-public class Node<T> {
+public class Node<T>{
 
     private Node<T> next;
     private T data;
@@ -26,10 +26,6 @@ public class Node<T> {
 
     public void setNext(Node<T> node){
         this.next = node;
-    }
-
-    public int getKey(){
-        return data.hashCode();
     }
 
     public T getData(){ return data; }

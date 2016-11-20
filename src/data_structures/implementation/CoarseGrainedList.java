@@ -25,7 +25,7 @@ public class CoarseGrainedList<T extends Comparable<T>> implements Sorted<T> {
         try {
             predecessor = head;
             current = predecessor.getNext();
-            while(current.getKey() < key){
+            while(current.getData().compareTo(t) < 0){
                 predecessor = current;
                 current = current.getNext();
             }
@@ -46,11 +46,11 @@ public class CoarseGrainedList<T extends Comparable<T>> implements Sorted<T> {
         try{
             predecessor = head;
             current = predecessor.getNext();
-            while(current.getKey() < key){
+            while(current.getData().compareTo(t) < 0){
                 predecessor = current;
                 current = current.getNext();
             }
-            if(key == current.getKey()){
+            if(current.getData().compareTo(t) == 0){
                 predecessor.setNext(current.getNext());
             }
             

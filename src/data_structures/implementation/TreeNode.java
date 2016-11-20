@@ -19,10 +19,6 @@ public class TreeNode<T> {
         this.rightChild = null;
     }
 
-    public int getKey(){
-        return data.hashCode();
-    }
-
     public T getData(){
         return data;
     }
