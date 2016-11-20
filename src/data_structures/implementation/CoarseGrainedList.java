@@ -60,13 +60,17 @@ public class CoarseGrainedList<T extends Comparable<T>> implements Sorted<T> {
     }
 
     public ArrayList<T> toArrayList() {
+    	lock.lock();
         Node<T> current = head;
         ArrayList<T> list = new ArrayList<>();
-        while(current != null){
-            list.add((T) current.getData());
-            current = current.getNext();
-        }
-
+        try{
+	        while(current != null){
+	            list.add((T) current.getData());
+	            current = current.getNext();
+	        }
+        } finally {
+        	lock.unlock();	
+        }    
         return list;
     }
 }
