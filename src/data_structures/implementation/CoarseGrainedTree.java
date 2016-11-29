@@ -14,7 +14,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         lock.lock(); 
         try {
         	if(root == null){
-        		root = new TreeNode<T>(t); 
+        		root = new TreeNode<T>(t);
         		return; 
         	}
         	addRecursive(root, new TreeNode<T>(t)); 
@@ -26,7 +26,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     private void addRecursive(TreeNode<T> lastNode, TreeNode<T> node){
     	if(lastNode.getData().compareTo(node.getData()) > 0){
     		if(lastNode.getLeftChild() == null){ 
-    			lastNode.setLeftChild(node); 
+    			lastNode.setLeftChild(node);
     			node.setParent(lastNode);
     			return;
     		} else {
@@ -34,7 +34,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     		}
     	} else {
     		if(lastNode.getRightChild() == null){
-    			lastNode.setRightChild(node); 
+    			lastNode.setRightChild(node);
     			node.setParent(lastNode);
     			return;
     		} else {
@@ -79,7 +79,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     				root.setParent(null);
     				return; 
     			} else if(currentNode.getLeftChild() != null){
-    				currentNode.getLeftChild().setParent(currentNode.getParent()); 
+    				currentNode.getLeftChild().setParent(currentNode.getParent());
         			if(currentNode.getParent().getData().compareTo(t) < 0){
         				currentNode.getParent().setRightChild(currentNode.getLeftChild());
         			} else {
@@ -94,13 +94,13 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         			}
     			}
     		} else {
-    			TreeNode<T> min = findMin(currentNode.getRightChild()); 
+    			TreeNode<T> min = findMin(currentNode.getRightChild());
 				if(min.getParent().getData().compareTo(min.getData()) < 0){
     				min.getParent().setRightChild(null);
     			} else {
     				min.getParent().setLeftChild(null);
-    			} 
-    			
+    			}
+
     			currentNode.setData(min.getData());
     		}
     	} else if(currentNode.getData().compareTo(t) < 0){
@@ -124,12 +124,8 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 
     public ArrayList<T> toArrayList() {
     	ArrayList<T> list = new ArrayList<>();
-    	lock.lock();
-    	try {
-	    	list = addRecursive(root, list); 
-    	} finally {
-    		lock.unlock();
-    	}
+    	list = addRecursive(root, list);
+
     	return list; 
     }
     
@@ -137,8 +133,8 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     	if(treeNode == null){
     		return arrayList; 
     	}
-    	arrayList.add(treeNode.getData());
-    	arrayList = addRecursive(treeNode.getLeftChild(), arrayList); 
+    	arrayList = addRecursive(treeNode.getLeftChild(), arrayList);
+		arrayList.add(treeNode.getData());
     	arrayList = addRecursive(treeNode.getRightChild(), arrayList); 
     	return arrayList;    	
     }
