@@ -7,12 +7,22 @@ import data_structures.Sorted;
 public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     private FineTreeNode<T> root;
 
+    public FineGrainedTree(){
+        root = new FineTreeNode<T>(null);
+    }
+
     public void add(T t) {
-        if (root == null) {
-            root = new FineTreeNode<T>(t);
-            System.out.println(this.toArrayList());
-            return;
+        try {
+            root.lock();
+            if (root.getData() == null) {
+                root.setData(t);
+                System.out.println(this.toArrayList().size());
+                return;
+            }
+        } finally {
+            root.unlock();
         }
+
 
         FineTreeNode<T> lastNode = root;
         try {
@@ -41,11 +51,11 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         } finally {
             lastNode.unlock();
         }
-        System.out.println(this.toArrayList());
+        System.out.println(this.toArrayList().size());
     }
 
     public void remove(T t) {
-        if (root == null) {
+        /*if (root == null) {
             System.out.println(this.toArrayList());
             return;
         }
@@ -59,7 +69,8 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             lastNode.unlock();
         }
 
-        System.out.println(this.toArrayList());
+        System.out.println(this.toArrayList());*/
+        throw new UnsupportedOperationException();
     }
 
     public ArrayList<T> toArrayList() {
