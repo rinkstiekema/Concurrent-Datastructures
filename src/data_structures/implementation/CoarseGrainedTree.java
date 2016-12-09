@@ -27,7 +27,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     	if(lastNode.getData().compareTo(node.getData()) > 0){
     		if(lastNode.getLeftChild() == null){ 
     			lastNode.setLeftChild(node);
-    			node.setParent(lastNode);
+    			//node.setParent(lastNode);
     			return;
     		} else {
     			addRecursive(lastNode.getLeftChild(), node); 
@@ -35,7 +35,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     	} else {
     		if(lastNode.getRightChild() == null){
     			lastNode.setRightChild(node);
-    			node.setParent(lastNode);
+    			//node.setParent(lastNode);
     			return;
     		} else {
     			addRecursive(lastNode.getRightChild(), node); 
@@ -56,63 +56,99 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     		lock.unlock();
     	}
     }
-    
-    private void removeRecursive(TreeNode<T> currentNode, T t){
-    	if(currentNode.getData().compareTo(t) == 0){
-    		if(currentNode.isLeaf()){
-    			if(currentNode == root){
-    				root = null;
-    				return; 
-    			}
-    			if(currentNode.getParent().getData().compareTo(t) < 0){
-    				currentNode.getParent().setRightChild(null);
-    			} else {
-    				currentNode.getParent().setLeftChild(null);
-    			}
-    		} else if(currentNode.hasOneChild()){
-    			if(currentNode == root){
-    				if(currentNode.getLeftChild() != null){
-    					root = currentNode.getLeftChild();
-    				} else {
-    					root = currentNode.getRightChild();
-    				}
-    				root.setParent(null);
-    				return; 
-    			} else if(currentNode.getLeftChild() != null){
-    				currentNode.getLeftChild().setParent(currentNode.getParent());
-        			if(currentNode.getParent().getData().compareTo(t) < 0){
-        				currentNode.getParent().setRightChild(currentNode.getLeftChild());
-        			} else {
-        				currentNode.getParent().setLeftChild(currentNode.getLeftChild());
-        			}
-    			} else {
-    				currentNode.getRightChild().setParent(currentNode.getParent());
-        			if(currentNode.getParent().getData().compareTo(t) < 0){
-        				currentNode.getParent().setRightChild(currentNode.getRightChild());
-        			} else {
-        				currentNode.getParent().setLeftChild(currentNode.getRightChild());
-        			}
-    			}
-    		} else {
-    			TreeNode<T> min = findMin(currentNode.getRightChild());
-				if(min.getParent().getData().compareTo(min.getData()) < 0){
-    				min.getParent().setRightChild(null);
-    			} else {
-    				min.getParent().setLeftChild(null);
-    			}
 
-    			currentNode.setData(min.getData());
-    		}
-    	} else if(currentNode.getData().compareTo(t) < 0){
-    		if(currentNode.getRightChild() != null){
-    			removeRecursive(currentNode.getRightChild(), t); 
-    		}
-    	} else {
-    		if(currentNode.getLeftChild() != null){
-    			removeRecursive(currentNode.getLeftChild(), t); 
-    		}
-    	}
+    private void removeRecursive(TreeNode<T> currentNode, T t){
+        if(currentNode == null) {   // ?
+            return;
+        } else if (currentNode.getData().compareTo(t) < 0) {
+            removeRecursive(currentNode.getLeftChild());
+        } else if (currentNode.getData().compareTo(t) > 0) {
+            removeRecursive(currentNode.getRightChild());
+        } else {
+            //found the node to remove
+            if (currentNode.getLeftChild != null && currentNode.getRightChild != null) {
+                TreeNode<T> min = findMin(currentNode.getRightChild());
+                currentNode.setData(min.getData);
+                min = null;
+                // if(min.getParent().getData().compareTo(min.getData()) < 0){
+                //     min.getParent().setRightChild(null);
+                // } else {
+                //     min.getParent().setLeftChild(null);
+                // }
+                // currentNode.setData(min.getData());
+            } else if(currentNode.getLeftChild == null) {
+                currentNode = currentNode.getRightChild;
+            } else if(currentNode.getRightChild == null) {
+                currentNode = currentNode.getLeftChild;
+            } else {
+                currentNode = null;
+            }
+        }
+
     }
+    
+    // private void removeRecursive(TreeNode<T> currentNode, T t){
+    // 	if(currentNode.getData().compareTo(t) == 0){
+
+
+
+    // 		if(currentNode.isLeaf()){
+    // 			if(currentNode == root){
+    // 				root = null;
+    // 				return; 
+    // 			}
+    // 			if(currentNode.getParent().getData().compareTo(t) < 0){
+    // 				currentNode.getParent().setRightChild(null);
+    // 			} else {
+    // 				currentNode.getParent().setLeftChild(null);
+    // 			}
+    // 		} else if(currentNode.hasOneChild()){
+    // 			if(currentNode == root){
+    // 				if(currentNode.getLeftChild() != null){
+    // 					root = currentNode.getLeftChild();
+    // 				} else {
+    // 					root = currentNode.getRightChild();
+    // 				}
+    // 				root.setParent(null);
+    // 				return; 
+    // 			} else if(currentNode.getLeftChild() != null){
+    // 				currentNode.getLeftChild().setParent(currentNode.getParent());
+    //     			if(currentNode.getParent().getData().compareTo(t) < 0){
+    //     				currentNode.getParent().setRightChild(currentNode.getLeftChild());
+    //     			} else {
+    //     				currentNode.getParent().setLeftChild(currentNode.getLeftChild());
+    //     			}
+    // 			} else {
+    // 				currentNode.getRightChild().setParent(currentNode.getParent());
+    //     			if(currentNode.getParent().getData().compareTo(t) < 0){
+    //     				currentNode.getParent().setRightChild(currentNode.getRightChild());
+    //     			} else {
+    //     				currentNode.getParent().setLeftChild(currentNode.getRightChild());
+    //     			}
+    // 			}
+    // 		} else {
+    // 			TreeNode<T> min = findMin(currentNode.getRightChild());
+				// if(min.getParent().getData().compareTo(min.getData()) < 0){
+    // 				min.getParent().setRightChild(null);
+    // 			} else {
+    // 				min.getParent().setLeftChild(null);
+    // 			}
+
+    // 			currentNode.setData(min.getData());
+    // 		}
+
+
+
+    // 	} else if(currentNode.getData().compareTo(t) < 0){
+    // 		if(currentNode.getRightChild() != null){
+    // 			removeRecursive(currentNode.getRightChild(), t); 
+    // 		}
+    // 	} else {
+    // 		if(currentNode.getLeftChild() != null){
+    // 			removeRecursive(currentNode.getLeftChild(), t); 
+    // 		}
+    // 	}
+    // }
     
     private TreeNode<T> findMin(TreeNode<T> node){
     	if(node.getLeftChild() == null){

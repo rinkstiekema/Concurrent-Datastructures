@@ -2,7 +2,7 @@ package data_structures.implementation;
 
 public class TreeNode<T> {
     private T data;
-    private TreeNode<T> parent;
+    //private TreeNode<T> parent;
     private TreeNode<T> leftChild;
     private TreeNode<T> rightChild;
 
@@ -12,12 +12,12 @@ public class TreeNode<T> {
         this.rightChild = null;
     }
 
-    public TreeNode(T data, TreeNode<T> parent){
-        this.data = data;
-        this.parent = parent;
-        this.leftChild = null;
-        this.rightChild = null;
-    }
+    // public TreeNode(T data, TreeNode<T> parent){
+    //     this.data = data;
+    //     this.parent = parent;
+    //     this.leftChild = null;
+    //     this.rightChild = null;
+    // }
 
     public T getData(){
         return data;
@@ -33,7 +33,7 @@ public class TreeNode<T> {
 
     public void setRightChild(TreeNode<T> treeNode) { this.rightChild = treeNode; }
     
-    public void setParent(TreeNode<T> treeNode) { this.parent = treeNode; }
+    //public void setParent(TreeNode<T> treeNode) { this.parent = treeNode; }
     
     public void setData(T t) { this.data = t; }
     
