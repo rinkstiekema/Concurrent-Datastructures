@@ -41,7 +41,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         } finally {
             lastNode.unlock();
         }
-        System.out.println(this.toArrayList());
+        //System.out.println(this.toArrayList());
     }
 
     public void remove(T t) {
@@ -59,7 +59,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             lastNode.unlock();
         }
 
-        System.out.println(this.toArrayList());
+        // System.out.println(this.toArrayList());
     }
 
     public ArrayList<T> toArrayList() {

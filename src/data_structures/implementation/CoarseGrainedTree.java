@@ -66,18 +66,13 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             //found the node to remove
             if (currentNode.getLeftChild() != null && currentNode.getRightChild() != null) {
                 TreeNode<T> min = findMin(currentNode.getRightChild());
+                TreeNode<T> orphanNode = min.getLeftChild();
                 currentNode.setData(min.getData());
                 min = null;
-                // if(min.getParent().getData().compareTo(min.getData()) < 0){
-                //     min.getParent().setRightChild(null);
-                // } else {
-                //     min.getParent().setLeftChild(null);
-                // }
-                // currentNode.setData(min.getData());
-            } else if(currentNode.getLeftChild() == null) {
-                currentNode = currentNode.getRightChild();
-            } else if(currentNode.getRightChild() == null) {
+            } else if(currentNode.getLeftChild() != null) {
                 currentNode = currentNode.getLeftChild();
+            } else if(currentNode.getRightChild() != null) {
+                currentNode = currentNode.getRightChild();
             } else {
                 currentNode = null;
             }
