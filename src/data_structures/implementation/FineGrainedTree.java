@@ -7,12 +7,22 @@ import data_structures.Sorted;
 public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     private FineTreeNode<T> root;
 
+    public FineGrainedTree(){
+        root = new FineTreeNode<T>(null);
+    }
+
     public void add(T t) {
-        if (root == null) {
-            root = new FineTreeNode<T>(t);
-            System.out.println(this.toArrayList());
-            return;
+        try {
+            root.lock();
+            if (root.getData() == null) {
+                root.setData(t);
+                System.out.println(this.toArrayList().size());
+                return;
+            }
+        } finally {
+            root.unlock();
         }
+
 
         FineTreeNode<T> lastNode = root;
         try {
@@ -41,10 +51,10 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         } finally {
             lastNode.unlock();
         }
-        //System.out.println(this.toArrayList());
     }
 
     public void remove(T t) {
+<<<<<<< HEAD
         remove(t, root);
     }
 
@@ -53,6 +63,15 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         if (root == null) {
             System.out.println(this.toArrayList());
             return;
+=======
+        try {
+            root.lock();
+            if (root.getData() == null) {
+                return;
+            }
+        } finally {
+            root.unlock();
+>>>>>>> 18d02e345d9588d18f107c69d8d04827f7858f90
         }
 
         FineTreeNode<T> lastNode = new FineTreeNode<T>(null);
@@ -61,6 +80,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             currentNode.lock();
             lastNode.lock();
             while (true) {
+<<<<<<< HEAD
                 if (currentNode.getData().compareTo(t) < 0){
                     lastNode.unlock();
                     lastNode = currentNode;
@@ -124,6 +144,28 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             return root.getData();
 
         }
+=======
+                lastNode.lock();
+                if(lastNode.getData().compareTo(t) < 0){
+                    FineTreeNode<T> child = lastNode.getLeftChild();
+                    try {
+                        child.lock();
+                        if(child.getData().compareTo(t) == 0){
+                              if(child.isLeaf()){
+                                  child = null;
+                              } else if(child.hasOneChild()) {
+                                  if(child.getLeftChild() == null){
+                                      
+                                  }
+                              }
+                        }
+                    } finally {
+                        child.unlock();
+                    }
+                }
+            }
+        }
+>>>>>>> 18d02e345d9588d18f107c69d8d04827f7858f90
     }
 
     public ArrayList<T> toArrayList() {
