@@ -55,22 +55,36 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     }
 
     public void remove(T t) {
-        /*if (root == null) {
-            System.out.println(this.toArrayList());
-            return;
+        try {
+            root.lock();
+            if (root.getData() == null) {
+                return;
+            }
+        } finally {
+            root.unlock();
         }
 
         FineTreeNode<T> lastNode = root;
         try {
             while (true) {
                 lastNode.lock();
+                if(lastNode.getData().compareTo(t) < 0){
+                    FineTreeNode<T> child = lastNode.getLeftChild();
+                    try {
+                        child.lock();
+                        if(child.getData().compareTo(t) == 0){
+                              if(child.isLeaf()){
+                                  child = null;
+                              } else if(child.hasOneChild()) {
+                                  if(child.getLeftChild() == null)
+                              }
+                        }
+                    } finally {
+                        child.unlock();
+                    }
+                }
             }
-        } finally {
-            lastNode.unlock();
         }
-
-        System.out.println(this.toArrayList());*/
-        throw new UnsupportedOperationException();
     }
 
     public ArrayList<T> toArrayList() {
