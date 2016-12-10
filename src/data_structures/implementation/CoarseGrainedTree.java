@@ -63,10 +63,9 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         } else if (currentNode.getData().compareTo(t) > 0) {
             removeRecursive(currentNode.getRightChild(), t);
         } else {
-            //found the node to remove
+            //found the node to remove 
             if (currentNode.getLeftChild() != null && currentNode.getRightChild() != null) {
                 TreeNode<T> min = findMin(currentNode.getRightChild());
-                TreeNode<T> orphanNode = min.getLeftChild();
                 currentNode.setData(min.getData());
                 min = null;
             } else if(currentNode.getLeftChild() != null) {
