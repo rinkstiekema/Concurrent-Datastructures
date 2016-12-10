@@ -1,168 +1,104 @@
 package data_structures.implementation;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import data_structures.Sorted;
 
 public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
-    private TreeNode<T> root;
-    private Lock lock = new ReentrantLock(); 
-    
-    public void add(T t) {
-        lock.lock(); 
-        try {
-        	if(root == null){
-        		root = new TreeNode<T>(t);
-        		return; 
-        	}
-        	addRecursive(root, new TreeNode<T>(t)); 
-        } finally {
-        	lock.unlock();
-        }
-    }
-    
-    private void addRecursive(TreeNode<T> lastNode, TreeNode<T> node){
-    	if(lastNode.getData().compareTo(node.getData()) > 0){
-    		if(lastNode.getLeftChild() == null){ 
-    			lastNode.setLeftChild(node);
-    			return;
-    		} else {
-    			addRecursive(lastNode.getLeftChild(), node); 
-    		}
-    	} else {
-    		if(lastNode.getRightChild() == null){
-    			lastNode.setRightChild(node);
-    			return;
-    		} else {
-    			addRecursive(lastNode.getRightChild(), node); 
-    		}
-    	}
-    }
+	public class Node<T>{
+		T data;
+		Node<T> left, right;
 
-    public void remove(T t) { 
-    	lock.lock(); 
-    	
-    	try {
-        	if(root == null){
-        		return; 
-        	}
-        	
-        	removeRecursive(root, t); 
-    	} finally {
-    		lock.unlock();
-    	}
-    }
+		public Node(T data) {
+			this.data = data;
+			this.left = null;
+			this.right = null;
+		}
 
-    private void removeRecursive(TreeNode<T> currentNode, T t){
-        if(currentNode == null) {   // ?
-            return;
-        } else if (currentNode.getData().compareTo(t) < 0) {
-            removeRecursive(currentNode.getLeftChild(), t);
-        } else if (currentNode.getData().compareTo(t) > 0) {
-            removeRecursive(currentNode.getRightChild(), t);
-        } else {
-            //found the node to remove 
-            if (currentNode.getLeftChild() != null && currentNode.getRightChild() != null) {
-                TreeNode<T> min = findMin(currentNode.getRightChild());
-                currentNode.setData(min.getData());
-                min = null;
-            } else if(currentNode.getLeftChild() != null) {
-                currentNode = currentNode.getLeftChild();
-            } else if(currentNode.getRightChild() != null) {
-                currentNode = currentNode.getRightChild();
-            } else {
-                currentNode = null;
-            }
-        }
-    }
-    
-    // private void removeRecursive(TreeNode<T> currentNode, T t){
-    // 	if(currentNode.getData().compareTo(t) == 0){
+		public Node(T data, Node<T> left, Node<T> right) {
+			this.data = data == null ? null : data;
+			this.left = left;
+			this.right = right;
+		}
+	}
 
+	private Node<T> root;
+	private ReentrantLock lock = new ReentrantLock();
 
+	public CoarseGrainedTree(){
+		root = null;
+	}
 
-    // 		if(currentNode.isLeaf()){
-    // 			if(currentNode == root){
-    // 				root = null;
-    // 				return;
-    // 			}
-    // 			if(currentNode.getParent().getData().compareTo(t) < 0){
-    // 				currentNode.getParent().setRightChild(null);
-    // 			} else {
-    // 				currentNode.getParent().setLeftChild(null);
-    // 			}
-    // 		} else if(currentNode.hasOneChild()){
-    // 			if(currentNode == root){
-    // 				if(currentNode.getLeftChild() != null){
-    // 					root = currentNode.getLeftChild();
-    // 				} else {
-    // 					root = currentNode.getRightChild();
-    // 				}
-    // 				root.setParent(null);
-    // 				return;
-    // 			} else if(currentNode.getLeftChild() != null){
-    // 				currentNode.getLeftChild().setParent(currentNode.getParent());
-    //     			if(currentNode.getParent().getData().compareTo(t) < 0){
-    //     				currentNode.getParent().setRightChild(currentNode.getLeftChild());
-    //     			} else {
-    //     				currentNode.getParent().setLeftChild(currentNode.getLeftChild());
-    //     			}
-    // 			} else {
-    // 				currentNode.getRightChild().setParent(currentNode.getParent());
-    //     			if(currentNode.getParent().getData().compareTo(t) < 0){
-    //     				currentNode.getParent().setRightChild(currentNode.getRightChild());
-    //     			} else {
-    //     				currentNode.getParent().setLeftChild(currentNode.getRightChild());
-    //     			}
-    // 			}
-    // 		} else {
-    // 			TreeNode<T> min = findMin(currentNode.getRightChild());
-				// if(min.getParent().getData().compareTo(min.getData()) < 0){
-    // 				min.getParent().setRightChild(null);
-    // 			} else {
-    // 				min.getParent().setLeftChild(null);
-    // 			}
+	private Node<T> addRecursively(T t, Node<T> root){
+		if(root == null){
+			return new Node<T>(t);
+		}
 
-    // 			currentNode.setData(min.getData());
-    // 		}
+		if(root.data.compareTo(t) < 0 ){
+			root.left = addRecursively(t, root.left);
+		} else {
+			root.right = addRecursively(t, root.right);
+		}
+		return root;
+	}
 
+	public void add(T t) {
+		lock.lock();
+		try {
+			root = addRecursively(t, root);
+		} finally {
+			lock.unlock();
+		}
+		System.out.println(this.toArrayList());
+	}
 
+	public void remove(T t) {
+		lock.lock();
+		try {
+			root = removeRecursively(t, root);
+		} finally {
+			lock.unlock();
+		}
+		System.out.println(this.toArrayList());
+	}
 
-    // 	} else if(currentNode.getData().compareTo(t) < 0){
-    // 		if(currentNode.getRightChild() != null){
-    // 			removeRecursive(currentNode.getRightChild(), t);
-    // 		}
-    // 	} else {
-    // 		if(currentNode.getLeftChild() != null){
-    // 			removeRecursive(currentNode.getLeftChild(), t);
-    // 		}
-    // 	}
-    // }
-    
-    private TreeNode<T> findMin(TreeNode<T> node){
-    	if(node.getLeftChild() == null){
-    		return node; 
-    	}
-    	
-    	return findMin(node.getLeftChild()); 
-    }
+	private Node<T> removeRecursively(T t, Node<T> root){
+		if(root.data.compareTo(t) < 0){
+			root.left = removeRecursively(t, root.left);
+		} else if(root.data.compareTo(t) > 0){
+			root.right = removeRecursively(t, root.right);
+		} else {
+			if(root.left == null){
+				root = root.right;
+			} else if(root.right == null){
+				root = root.left;
+			} else {
+				root.data = smallest(root.right);
+				root.right = removeRecursively(root.data, root.right);
+			}
+		}
+		return root;
+	}
 
-    public ArrayList<T> toArrayList() {
-    	ArrayList<T> list = new ArrayList<>();
-    	list = addRecursive(root, list);
+	private T smallest(Node<T> root){
+		return root.left == null ? root.data : smallest(root.left);
+	}
 
-    	return list; 
-    }
-    
-    private ArrayList<T> addRecursive(TreeNode<T> treeNode, ArrayList<T> arrayList){
-    	if(treeNode == null){
-    		return arrayList; 
-    	}
-    	arrayList = addRecursive(treeNode.getLeftChild(), arrayList);
-		arrayList.add(treeNode.getData());
-    	arrayList = addRecursive(treeNode.getRightChild(), arrayList); 
-    	return arrayList;    	
-    }
+	public ArrayList<T> toArrayList() {
+		ArrayList<T> list = new ArrayList<>();
+		list = toArrayList(root, list);
+
+		return list;
+	}
+
+	private ArrayList<T> toArrayList(Node<T> node, ArrayList<T> arrayList){
+		if(node == null){
+			return arrayList;
+		}
+		arrayList = toArrayList(node.left, arrayList);
+		arrayList.add(node.data);
+		arrayList = toArrayList(node.right, arrayList);
+		return arrayList;
+	}
 }

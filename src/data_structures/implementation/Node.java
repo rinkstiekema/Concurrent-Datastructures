@@ -9,7 +9,7 @@ public class Node<T>{
     	data = null;
     	next = null;
     }
-    
+
     public Node(T data){
         this.data = data;
         next = null;
