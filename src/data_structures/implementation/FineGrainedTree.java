@@ -43,6 +43,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     }
 
     public void add(T t) {
+        System.out.println("Adding: "+t);
         root.lock();
         try {
             if(root.data == null){ //Tree is empty
@@ -74,34 +75,64 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                 }
             }
         } finally {
-            System.out.println(this.toArrayList());
+            ;
         }
     }
 
     public void remove(T t) {
-
-    }
-
-    private Node<T> removeRecursively(T t, Node<T> root){
-        if(root.data.compareTo(t) < 0){
-            root.left = removeRecursively(t, root.left);
-        } else if(root.data.compareTo(t) > 0){
-            root.right = removeRecursively(t, root.right);
-        } else {
-            if(root.left == null){
-                root = root.right;
-            } else if(root.right == null){
-                root = root.left;
+        System.out.println("Removing: "+t);
+        root.lock();
+        try {
+            if(root.data == null){ //Tree is empty
+                return;
             } else {
-                root.data = smallest(root.right);
-                root.right = removeRecursively(root.data, root.right);
+                Node<T> current = root;
+                while(current != null) {
+                    if(current.data.compareTo(t) == 0){ // Found node to remove
+                        if(current.left == null){
+                            current = current.right;
+                            break;
+                        } else if(current.right == null){
+                            current = current.left;
+                            break;
+                        } else {
+                            current.right.lock();
+                            current.data = returnAndRemoveSmallest(current.right);
+                            break;
+                        }
+                    } else if(current.data.compareTo(t) > 0){ // Go Left
+                        if(current.left == null){
+                            break;
+                        }
+                        current.left.lock();
+                        current.unlock();
+                        current = current.left;
+                    } else { // Go Right
+                        if(current.left == null){
+                            break;
+                        }
+                        current.right.lock();
+                        current.unlock();
+                        current = current.right;
+                    }
+                }
             }
+        } finally {
+            ;
         }
-        return root;
     }
 
-    private T smallest(Node<T> root){
-        return root.left == null ? root.data : smallest(root.left);
+    private T returnAndRemoveSmallest(Node<T> start){
+        Node<T> current = start;
+
+        while(current.left != null){
+            current.left.lock();
+            current.unlock();
+            current = current.left;
+        }
+        T data = current.data;
+        current = null;
+        return data;
     }
 
     public ArrayList<T> toArrayList() {
