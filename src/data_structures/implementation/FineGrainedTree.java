@@ -77,10 +77,10 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         } finally {
             ;
         }
+        System.out.println(this.toArrayList());
     }
 
     public void remove(T t) {
-        System.out.println("Removing: "+t);
         root.lock();
         try {
             if(root.data == null){ //Tree is empty
@@ -90,48 +90,60 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                 while(current != null) {
                     if(current.data.compareTo(t) == 0){ // Found node to remove
                         if(current.left == null){
+                            System.out.println("right");
                             current = current.right;
-                            break;
                         } else if(current.right == null){
+                            System.out.println("left");
                             current = current.left;
-                            break;
                         } else {
                             current.right.lock();
-                            current.data = returnAndRemoveSmallest(current.right);
-                            break;
+                            current.data = returnAndRemoveSmallest(current.right, current);
                         }
+                        break;
                     } else if(current.data.compareTo(t) > 0){ // Go Left
-                        if(current.left == null){
+                        if(current.left != null) {
+                            current.left.lock();
+                            current.unlock();
+                            current = current.left;
+                        } else {
                             break;
                         }
-                        current.left.lock();
-                        current.unlock();
-                        current = current.left;
                     } else { // Go Right
-                        if(current.left == null){
+                        if(current.right != null) {
+                            current.right.lock();
+                            current.unlock();
+                            current = current.right;
+                        } else {
                             break;
                         }
-                        current.right.lock();
-                        current.unlock();
-                        current = current.right;
                     }
                 }
             }
         } finally {
             ;
         }
+        System.out.println(this.toArrayList());
     }
 
-    private T returnAndRemoveSmallest(Node<T> start){
-        Node<T> current = start;
+    private T returnAndRemoveSmallest(Node<T> start, Node<T> startParent){
+        System.out.println("return and remove");
 
+        Node<T> current = start,
+                last = startParent;
         while(current.left != null){
+            last.unlock();
+            last = current;
             current.left.lock();
-            current.unlock();
             current = current.left;
         }
+
         T data = current.data;
-        current = null;
+        if(last == startParent){
+            last.right = null;
+        } else {
+            last.left = null;
+        }
+
         return data;
     }
 
