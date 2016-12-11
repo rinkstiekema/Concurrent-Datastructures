@@ -162,7 +162,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                         if(current.numberOfChildren() == 2){
                             System.out.println("2");
                             current.right.lock();
-                            current.data = returnAndRemoveSmallest(current.right, current);
+                            current.data = returnAndRemoveSmallest(current, current, current.right);
                         } else if(current.numberOfChildren() == 1){
                             System.out.println("1");
                             if(current.left == null){
@@ -195,9 +195,9 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                         } else {
                             System.out.println("0");
                             if(parent.data == null){
-                                current.data = null;
-                                current.unlock();
+                                root.data = null;
                                 parent.unlock();
+                                current.unlock();
                                 break;
                             } else {
                                 if(parent.data.compareTo(current.data) > 0){
@@ -219,6 +219,8 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                             parent = current;
                             current = current.left;
                         } else {
+                            current.unlock();
+                            parent.unlock();
                             break;
                         }
                     } else { // Go Right
@@ -229,6 +231,8 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                             parent = current;
                             current = current.right;
                         } else {
+                            current.unlock();
+                            parent.unlock();
                             break;
                         }
                     }
@@ -240,17 +244,18 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         System.out.println(this.toArrayList());
     }
 
-    private T returnAndRemoveSmallest(Node<T> last, Node<T> current){
+    private T returnAndRemoveSmallest(Node<T> start, Node<T> last, Node<T> current){
         if(current.left == null){
-            if(last.data.compareTo(current.data) < 0){
-                last.right = null;
-                last.unlock();
+            if(start == last){
                 T data = current.data;
+                last.right = current.right;
+                last.unlock();
                 current.unlock();
                 return data;
             }
-            last.left = null;
+
             T data = current.data;
+            last.left = current.right;
             current.unlock();
             last.unlock();
             return data;
@@ -258,7 +263,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 
         last.unlock();
         current.left.lock();
-        return returnAndRemoveSmallest(current, current.left);
+        return returnAndRemoveSmallest(start, current, current.left);
     }
 
     public ArrayList<T> toArrayList() {
