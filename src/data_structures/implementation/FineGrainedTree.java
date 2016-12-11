@@ -42,27 +42,6 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         root = new Node<T>(null);
     }
 
-    private Node<T> addRecursively(T t, Node<T> root){
-        if(root == null){
-            return new Node<T>(t);
-        }
-
-        if(root.data.compareTo(t) > 0 ){
-            root.unlock();
-            if(root.left != null) {
-                root.left.lock();
-            }
-            root.left = addRecursively(t, root.left);
-        } else {
-            root.unlock();
-            if(root.right != null) {
-                root.right.lock();
-            }
-            root.right = addRecursively(t, root.right);
-        }
-        return root;
-    }
-
     public void add(T t) {
         root.lock();
         try {
@@ -74,6 +53,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                     if (current.data.compareTo(t) > 0) {
                         if (current.left == null) {
                             current.left = new Node<T>(t);
+                            current.unlock();
                             break;
                         } else {
                             current.left.lock();
@@ -83,6 +63,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                     } else {
                         if (current.right == null) {
                             current.right = new Node<T>(t);
+                            current.unlock();
                             break;
                         } else {
                             current.right.lock();
