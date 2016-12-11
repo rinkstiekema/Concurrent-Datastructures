@@ -50,7 +50,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 		} finally {
 			lock.unlock();
 		}
-		System.out.println(this.toArrayList().size());
+		//System.out.println(this.toArrayList().size());
 	}
 
 	public void remove(T t) {
@@ -60,7 +60,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 		} finally {
 			lock.unlock();
 		}
-		System.out.println(this.toArrayList().size());
+		//System.out.println(this.toArrayList().size());
 	}
 
 	private Node<T> removeRecursively(T t, Node<T> root){
