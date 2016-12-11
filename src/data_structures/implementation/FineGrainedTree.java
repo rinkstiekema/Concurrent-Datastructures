@@ -67,42 +67,34 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         root.lock();
         try {
             if(root.data == null){ //Tree is empty
-                root.data = t;
+                root = new Node<T>(t);
             } else {
                 Node<T> current = root;
-                while (true) {
-                    if (current.data.compareTo(t) > 0) { //t is smaller than current node
-                        if(current.left != null){
-                            current.left.lock();
-                            try {
-                                current = current.left;
-                            } finally {
-                                current.unlock();
-                            }
-                        } else { //Found spot to add the new node
+                while(true) {
+                    if (current.data.compareTo(t) > 0) {
+                        if (current.left == null) {
                             current.left = new Node<T>(t);
                             break;
+                        } else {
+                            current.left.lock();
+                            current.unlock();
+                            current = current.left;
                         }
-                    } else {  //t is bigger than current node
-                        if(current.right != null){
-                            current.right.lock();
-                            try {
-                                current = current.right;
-                            } finally {
-                                current.unlock();
-                            }
-                        } else { //Found spot to add the new node
+                    } else {
+                        if (current.right == null) {
                             current.right = new Node<T>(t);
                             break;
+                        } else {
+                            current.right.lock();
+                            current.unlock();
+                            current = current.right;
                         }
                     }
                 }
             }
         } finally {
-            root.unlock();
+            System.out.println(this.toArrayList());
         }
-
-        System.out.println(this.toArrayList());
     }
 
     public void remove(T t) {
