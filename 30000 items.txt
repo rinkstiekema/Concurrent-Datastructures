@@ -1,0 +1,128 @@
+30000 items:
+
+DATASTRUCTURE cgl
+DATASTRUCTURE cgl    WORKTIME 0    ITEMS 30000
+time: 7744 ms
+time: 8254 ms
+time: 8813 ms
+time: 8769 ms
+time: 8115 ms
+time: 8703 ms
+
+DATASTRUCTURE cgl    WORKTIME 1    ITEMS 30000
+time: 11085 ms
+time: 10396 ms
+time: 9408 ms
+time: 9080 ms
+time: 10195 ms
+time: 9958 ms
+
+DATASTRUCTURE cgl    WORKTIME 2    ITEMS 30000
+time: 8895 ms
+time: 9505 ms
+time: 10880 ms
+time: 9167 ms
+time: 9332 ms
+time: 11681 ms
+
+DATASTRUCTURE cgl    WORKTIME 5    ITEMS 30000
+time: 12048 ms
+time: 10124 ms
+time: 10735 ms
+time: 9774 ms
+time: 9803 ms
+time: 11533 ms
+
+DATASTRUCTURE cgl    WORKTIME 10    ITEMS 30000
+time: 9452 ms
+time: 10943 ms
+time: 10282 ms
+time: 10739 ms
+time: 11353 ms
+time: 12411 ms
+
+
+
+DATASTRUCTURE cgt
+DATASTRUCTURE cgt    WORKTIME 0    ITEMS 30000
+time: 62 ms
+time: 183 ms
+time: 149 ms
+time: 153 ms
+time: 173 ms
+time: 176 ms
+
+DATASTRUCTURE cgt    WORKTIME 1    ITEMS 30000
+time: 156 ms
+time: 292 ms
+time: 351 ms
+time: 322 ms
+time: 336 ms
+time: 332 ms
+
+DATASTRUCTURE cgt    WORKTIME 2    ITEMS 30000
+time: 212 ms
+time: 332 ms
+time: 398 ms
+time: 382 ms
+time: 386 ms
+time: 397 ms
+
+DATASTRUCTURE cgt    WORKTIME 5    ITEMS 30000
+time: 394 ms
+time: 281 ms
+time: 323 ms
+time: 393 ms
+time: 442 ms
+time: 413 ms
+
+DATASTRUCTURE cgt    WORKTIME 10    ITEMS 30000
+time: 708 ms
+time: 437 ms
+time: 337 ms
+time: 378 ms
+time: 447 ms
+time: 439 ms
+
+
+
+DATASTRUCTURE fgl
+DATASTRUCTURE fgl    WORKTIME 0    ITEMS 30000
+time: 13426 ms
+time: 36144 ms
+time: 15051 ms
+time: 7111 ms
+time: 5201 ms
+time: 4838 ms
+
+DATASTRUCTURE fgl    WORKTIME 1    ITEMS 30000
+time: 13983 ms
+time: 19738 ms
+time: 15784 ms
+time: 6035 ms
+time: 5013 ms
+time: 4721 ms
+
+DATASTRUCTURE fgl    WORKTIME 2    ITEMS 30000
+time: 14077 ms
+time: 20325 ms
+time: 12554 ms
+time: 6025 ms
+time: 4890 ms
+time: 4701 ms
+
+DATASTRUCTURE fgl    WORKTIME 5    ITEMS 30000
+time: 15017 ms
+time: 28515 ms
+time: 13407 ms
+time: 5884 ms
+time: 5015 ms
+time: 5253 ms
+
+DATASTRUCTURE fgl    WORKTIME 10    ITEMS 30000
+time: 17021 ms
+time: 31823 ms
+time: 15287 ms
+time: 5796 ms
+time: 4933 ms
+time: 4757 ms
