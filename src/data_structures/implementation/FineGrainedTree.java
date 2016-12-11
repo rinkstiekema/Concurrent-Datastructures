@@ -34,6 +34,16 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         public void unlock(){
             lock.unlock();
         }
+
+        public int numberOfChildren() {
+            if (left != null && right != null) {
+                return 2;
+            } else if (left == null && right == null) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 
     private Node<T> root;
@@ -46,7 +56,8 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         root.lock();
         try {
             if(root.data == null){ //Tree is empty
-                root = new Node<T>(t);
+                root.data = t;
+                root.unlock();
             } else {
                 Node<T> current = root;
                 while(true) {
@@ -79,13 +90,13 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
         System.out.println(this.toArrayList());
     }
 
-    public void remove(T t){
+    /*public void remove(T t){
         root.lock();
         remove(root, t);
         System.out.println(this.toArrayList());
-    }
+    }*/
 
-    public void remove(Node<T> root, T t){
+    /*public void remove(Node<T> root, T t){
         System.out.println("Removing: "+t);
         if(root.data == null){
             root.unlock();
@@ -131,39 +142,91 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
                 root = null;
             }
         }
-    }
+    }*/
 
-    /*public void remove(T t) {
+    public void remove(T t) {
+        System.out.println("Removing: "+t);
         root.lock();
         try {
             if(root.data == null){ //Tree is empty
                 root.unlock();
                 return;
             } else {
-                Node<T> current = root;
+                Node<T> current = root,
+                        parent = new Node<T>(null);
+
+                parent.lock();
+
                 while(current != null) {
                     if(current.data.compareTo(t) == 0){ // Found node to remove
-                        if(current.left == null){
-
-                        } else if(current.right == null){
-
-                        } else {
+                        if(current.numberOfChildren() == 2){
+                            System.out.println("2");
                             current.right.lock();
                             current.data = returnAndRemoveSmallest(current.right, current);
+                        } else if(current.numberOfChildren() == 1){
+                            System.out.println("1");
+                            if(current.left == null){
+                                if(parent.data == null){
+                                    root = current.right;
+                                } else {
+                                    if(parent.data.compareTo(current.data) > 0){
+                                        parent.left = current.right;
+                                    } else {
+                                        parent.right = current.right;
+                                    }
+                                }
+
+                                parent.unlock();
+                                current.unlock();
+                            } else {
+                                if(parent.data == null){
+                                    root = current.left;
+                                } else {
+                                    if(parent.data.compareTo(current.data) > 0){
+                                        parent.left = current.left;
+                                    } else {
+                                        parent.right = current.left;
+                                    }
+                                }
+
+                                parent.unlock();
+                                current.unlock();
+                            }
+                        } else {
+                            System.out.println("0");
+                            if(parent.data == null){
+                                current.data = null;
+                                current.unlock();
+                                parent.unlock();
+                                break;
+                            } else {
+                                if(parent.data.compareTo(current.data) > 0){
+                                    parent.left = null;
+                                } else {
+                                    parent.right = null;
+                                }
+                                parent.unlock();
+                                current.unlock();
+                                break;
+                            }
                         }
                         break;
                     } else if(current.data.compareTo(t) > 0){ // Go Left
+                        System.out.println("Going left");
                         if(current.left != null) {
                             current.left.lock();
-                            current.unlock();
+                            parent.unlock();
+                            parent = current;
                             current = current.left;
                         } else {
                             break;
                         }
                     } else { // Go Right
+                        System.out.println("Going right");
                         if(current.right != null) {
                             current.right.lock();
-                            current.unlock();
+                            parent.unlock();
+                            parent = current;
                             current = current.right;
                         } else {
                             break;
@@ -175,7 +238,7 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
             ;
         }
         System.out.println(this.toArrayList());
-    }*/
+    }
 
     private T returnAndRemoveSmallest(Node<T> last, Node<T> current){
         if(current.left == null){
@@ -206,6 +269,9 @@ public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
     }
 
     private ArrayList<T> toArrayList(Node<T> node, ArrayList<T> arrayList){
+        if(node == root && node.data == null){
+            return arrayList;
+        }
         if(node == null){
             return arrayList;
         }
