@@ -1,109 +1,150 @@
 package data_structures.implementation;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import data_structures.Sorted;
 
 public class FineGrainedTree<T extends Comparable<T>> implements Sorted<T> {
-    private FineTreeNode<T> root;
+    public class Node<T>{
+        T data;
+        Node<T> left, right;
+        Lock lock;
+
+
+        public Node(T data) {
+            this.data = data;
+            this.left = null;
+            this.right = null;
+            this.lock = new ReentrantLock();
+        }
+
+        public Node(T data, Node<T> left, Node<T> right) {
+            this.data = data == null ? null : data;
+            this.left = left;
+            this.right = right;
+            this.lock = new ReentrantLock();
+        }
+
+        public void lock(){
+            lock.lock();
+        }
+
+        public void unlock(){
+            lock.unlock();
+        }
+    }
+
+    private Node<T> root;
 
     public FineGrainedTree(){
-        root = new FineTreeNode<T>(null);
+        root = new Node<T>(null);
+    }
+
+    private Node<T> addRecursively(T t, Node<T> root){
+        if(root == null){
+            return new Node<T>(t);
+        }
+
+        if(root.data.compareTo(t) > 0 ){
+            root.unlock();
+            if(root.left != null) {
+                root.left.lock();
+            }
+            root.left = addRecursively(t, root.left);
+        } else {
+            root.unlock();
+            if(root.right != null) {
+                root.right.lock();
+            }
+            root.right = addRecursively(t, root.right);
+        }
+        return root;
     }
 
     public void add(T t) {
+        root.lock();
         try {
-            root.lock();
-            if (root.getData() == null) {
-                root.setData(t);
-                System.out.println(this.toArrayList().size());
-                return;
+            if(root.data == null){ //Tree is empty
+                root.data = t;
+            } else {
+                Node<T> current = root;
+                while (true) {
+                    if (current.data.compareTo(t) > 0) { //t is smaller than current node
+                        if(current.left != null){
+                            current.left.lock();
+                            try {
+                                current = current.left;
+                            } finally {
+                                current.unlock();
+                            }
+                        } else { //Found spot to add the new node
+                            current.left = new Node<T>(t);
+                            break;
+                        }
+                    } else {  //t is bigger than current node
+                        if(current.right != null){
+                            current.right.lock();
+                            try {
+                                current = current.right;
+                            } finally {
+                                current.unlock();
+                            }
+                        } else { //Found spot to add the new node
+                            current.right = new Node<T>(t);
+                            break;
+                        }
+                    }
+                }
             }
         } finally {
             root.unlock();
         }
 
-
-        FineTreeNode<T> lastNode = root;
-        try {
-            while (true) {
-                lastNode.lock();
-                if (lastNode.getData().compareTo(t) > 0) {
-                    if (lastNode.getLeftChild() == null) {
-                        lastNode.setLeftChild(new FineTreeNode<T>(t));
-                        break;
-                    } else {
-                        FineTreeNode<T> node = lastNode.getLeftChild();
-                        lastNode.unlock();
-                        lastNode = node;
-                    }
-                } else {
-                    if (lastNode.getRightChild() == null) {
-                        lastNode.setRightChild(new FineTreeNode<T>(t));
-                        break;
-                    } else {
-                        FineTreeNode<T> node = lastNode.getRightChild();
-                        lastNode.unlock();
-                        lastNode = node;
-                    }
-                }
-            }
-        } finally {
-            lastNode.unlock();
-        }
-    }
-
-    private ArrayList<T> addRecursive(FineTreeNode<T> treeNode, ArrayList<T> arrayList){
-        if(treeNode == null){
-            return arrayList;
-        }
-        arrayList = addRecursive(treeNode.getLeftChild(), arrayList);
-        arrayList.add(treeNode.getData());
-        arrayList = addRecursive(treeNode.getRightChild(), arrayList);
-        return arrayList;
+        System.out.println(this.toArrayList());
     }
 
     public void remove(T t) {
-        try {
-            root.lock();
-            if (root.getData() == null) {
-                return;
-            }
-        } finally {
-            root.unlock();
-        }
-        FineTreeNode<T> lastNode = new FineTreeNode<T>(null);
-        FineTreeNode<T> currentNode = root;
-        try {
-            currentNode.lock();
-            lastNode.lock();
-            while (true) {
-                lastNode.lock();
-                if(lastNode.getData().compareTo(t) < 0){
-                    FineTreeNode<T> child = lastNode.getLeftChild();
-                    try {
-                        child.lock();
-                        if(child.getData().compareTo(t) == 0){
-                              if(child.isLeaf()){
-                                  child = null;
-                              } else if(child.hasOneChild()) {
-                                  if(child.getLeftChild() == null){
-                                      
-                                  }
-                              }
-                        }
-                    } finally {
-                        child.unlock();
-                    }
-                }
+
+    }
+
+    private Node<T> removeRecursively(T t, Node<T> root){
+        if(root.data.compareTo(t) < 0){
+            root.left = removeRecursively(t, root.left);
+        } else if(root.data.compareTo(t) > 0){
+            root.right = removeRecursively(t, root.right);
+        } else {
+            if(root.left == null){
+                root = root.right;
+            } else if(root.right == null){
+                root = root.left;
+            } else {
+                root.data = smallest(root.right);
+                root.right = removeRecursively(root.data, root.right);
             }
         }
+        return root;
+    }
+
+    private T smallest(Node<T> root){
+        return root.left == null ? root.data : smallest(root.left);
     }
 
     public ArrayList<T> toArrayList() {
         ArrayList<T> list = new ArrayList<>();
-        list = addRecursive(root, list);
+        list = toArrayList(root, list);
 
         return list;
+    }
+
+    private ArrayList<T> toArrayList(Node<T> node, ArrayList<T> arrayList){
+        if(node == null){
+            return arrayList;
+        }
+        arrayList = toArrayList(node.left, arrayList);
+        arrayList.add(node.data);
+        arrayList = toArrayList(node.right, arrayList);
+        return arrayList;
     }
 }

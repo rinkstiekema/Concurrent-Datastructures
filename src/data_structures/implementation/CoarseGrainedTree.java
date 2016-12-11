@@ -35,7 +35,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 			return new Node<T>(t);
 		}
 
-		if(root.data.compareTo(t) < 0 ){
+		if(root.data.compareTo(t) > 0 ){
 			root.left = addRecursively(t, root.left);
 		} else {
 			root.right = addRecursively(t, root.right);
@@ -50,7 +50,7 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 		} finally {
 			lock.unlock();
 		}
-		System.out.println(this.toArrayList());
+		System.out.println(this.toArrayList().size());
 	}
 
 	public void remove(T t) {
@@ -60,13 +60,13 @@ public class CoarseGrainedTree<T extends Comparable<T>> implements Sorted<T> {
 		} finally {
 			lock.unlock();
 		}
-		System.out.println(this.toArrayList());
+		System.out.println(this.toArrayList().size());
 	}
 
 	private Node<T> removeRecursively(T t, Node<T> root){
-		if(root.data.compareTo(t) < 0){
+		if(root.data.compareTo(t) > 0){
 			root.left = removeRecursively(t, root.left);
-		} else if(root.data.compareTo(t) > 0){
+		} else if(root.data.compareTo(t) < 0){
 			root.right = removeRecursively(t, root.right);
 		} else {
 			if(root.left == null){
