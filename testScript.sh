@@ -1,29 +1,34 @@
 #!/bin/bash 
 
+#call this script with 1 argument: the number of items
+
 iterateThreads () {
-	echo "DATASTRUCTURE $1    WORKTIME $2";
-	./bin/test_data_structures $1 1 2000 $2 | grep time &&
-	./bin/test_data_structures $1 10 2000 $2 | grep time &&
-	./bin/test_data_structures $1 100 2000 $2 | grep time &&
-	./bin/test_data_structures $1 1000 2000 $2 | grep time
+	echo "DATASTRUCTURE $1    WORKTIME $2    ITEMS $3";
+	./bin/test_data_structures $1 1 $3 $2 | grep time &&
+	./bin/test_data_structures $1 4 $3 $2 | grep time &&
+	./bin/test_data_structures $1 10 $3 $2 | grep time &&
+	./bin/test_data_structures $1 20 $3 $2 | grep time &&
+	./bin/test_data_structures $1 40 $3 $2 | grep time &&
 	echo;
 }
 
 iterateWorkTimeAndThreads () {
 	echo;
 	echo "DATASTRUCTURE $1";
-	iterateThreads $1 0;
-	iterateThreads $1 1;
-	iterateThreads $1 2;
-	iterateThreads $1 5;
-	iterateThreads $1 10;
+	iterateThreads $1 0 $2;
+	iterateThreads $1 1 $2;
+	iterateThreads $1 2 $2;
+	iterateThreads $1 5 $2;
+	iterateThreads $1 10 $2;
 	echo;
 }
 
 ./bin/build.sh && 
 echo && {
-iterateWorkTimeAndThreads cgl;
-iterateWorkTimeAndThreads cgt;
-iterateWorkTimeAndThreads fgl;
-# iterateWorkTimeAndThreads fgt;
+(
+	iterateWorkTimeAndThreads cgl $1;
+	iterateWorkTimeAndThreads cgt $1;
+	iterateWorkTimeAndThreads fgl $1;
+	# iterateWorkTimeAndThreads fgt $1;
+)	| tee testing.txt
 }
