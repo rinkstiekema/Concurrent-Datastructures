@@ -5,10 +5,10 @@
 iterateThreads () {
 	echo "DATASTRUCTURE $1    WORKTIME $2    ITEMS $3";
 	./bin/test_data_structures $1 1 $3 $2 | grep time &&
+	./bin/test_data_structures $1 2 $3 $2 | grep time &&
 	./bin/test_data_structures $1 4 $3 $2 | grep time &&
 	./bin/test_data_structures $1 10 $3 $2 | grep time &&
 	./bin/test_data_structures $1 20 $3 $2 | grep time &&
-	./bin/test_data_structures $1 40 $3 $2 | grep time &&
 	echo;
 }
 
@@ -26,9 +26,9 @@ iterateWorkTimeAndThreads () {
 ./bin/build.sh && 
 echo && {
 (
-	iterateWorkTimeAndThreads cgl $1;
-	iterateWorkTimeAndThreads cgt $1;
-	iterateWorkTimeAndThreads fgl $1;
-	# iterateWorkTimeAndThreads fgt $1;
+	# iterateWorkTimeAndThreads cgl $1;
+	# iterateWorkTimeAndThreads cgt $1;
+	# iterateWorkTimeAndThreads fgl $1;
+	iterateWorkTimeAndThreads fgt $1;
 )	| tee testing.txt
 }
